@@ -5,15 +5,21 @@ import com.mecorp.backend.facade.ActivityFacade;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/activities")
 @RequiredArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin(origins = "*")
 public class ActivityController {
     private final ActivityFacade activityFacade;
+
+    private final Map<String, WebSocketSession> websocketSessions;
 
     @GetMapping("")
     public List<ActivityDto> getAllActivities() {
@@ -43,5 +49,17 @@ public class ActivityController {
     @DeleteMapping("/{activityId}")
     public ActivityDto deleteActivity(@PathVariable Integer activityId) throws Exception {
         return this.activityFacade.deleteActivity(activityId);
+    }
+
+    @GetMapping("/websocket/notif")
+    public void sendNotif() {
+        TextMessage textMessage = new TextMessage("new-data-arrived");
+        websocketSessions.forEach((id, websocketSession) -> {
+            try {
+                websocketSession.sendMessage(textMessage);
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        });
     }
 }
