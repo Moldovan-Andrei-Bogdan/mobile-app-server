@@ -20,23 +20,18 @@ public class ActivityDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 
-    @NotEmpty
     @NotNull
     private String title;
 
-    @NotEmpty
     @NotNull
     private String occurrenceDate;
 
-    @NotEmpty
     @NotNull
     private String jiraLink;
 
-    @NotEmpty
     @NotNull
     private String description;
 
-    @NotEmpty
     @NotNull
     private String spentHours;
 }

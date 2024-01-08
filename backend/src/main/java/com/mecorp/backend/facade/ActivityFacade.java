@@ -5,6 +5,7 @@ import com.mecorp.backend.model.Activity;
 import com.mecorp.backend.populator.impl.FullActivityPopulator;
 import com.mecorp.backend.populator.impl.FullActivityReversePopulator;
 import com.mecorp.backend.service.ActivityService;
+import com.mecorp.backend.socket.BroadcastUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,8 @@ public class ActivityFacade {
 
     private final FullActivityReversePopulator fullActivityReversePopulator;
 
+    private final BroadcastUtil broadcastUtil;
+
     public ActivityDto createActivity(ActivityDto activityDto) {
         Activity activity = new Activity();
         this.fullActivityReversePopulator.populate(activityDto, activity);
@@ -27,6 +30,8 @@ public class ActivityFacade {
         Activity savedActivity = this.activityService.createActivity(activity);
         ActivityDto savedActivityDto = new ActivityDto();
         this.fullActivityPopulator.populate(savedActivity, savedActivityDto);
+
+        this.broadcastUtil.sendDataChangeMessage();
 
         return savedActivityDto;
     }
@@ -49,6 +54,8 @@ public class ActivityFacade {
             savedActivityDtos.add(activityDto);
         }
 
+        this.broadcastUtil.sendDataChangeMessage();
+
         return savedActivityDtos;
     }
 
@@ -60,6 +67,8 @@ public class ActivityFacade {
         ActivityDto updatedActivityDto = new ActivityDto();
         this.fullActivityPopulator.populate(updatedActivity, updatedActivityDto);
 
+        this.broadcastUtil.sendDataChangeMessage();
+
         return updatedActivityDto;
     }
 
@@ -67,6 +76,8 @@ public class ActivityFacade {
         Activity deletedActivity = this.activityService.deleteActivity(id);
         ActivityDto deletedActivityDto = new ActivityDto();
         this.fullActivityPopulator.populate(deletedActivity, deletedActivityDto);
+
+        this.broadcastUtil.sendDataChangeMessage();
 
         return deletedActivityDto;
     }
